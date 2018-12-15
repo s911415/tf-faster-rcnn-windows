@@ -149,6 +149,7 @@ def test_net(sess, net, imdb, weights_filename, max_per_image=100, thresh=0.):
   # timers
   _t = {'im_detect' : Timer(), 'misc' : Timer()}
 
+  print('output_dir: ' + output_dir)
   for i in range(num_images):
     im = cv2.imread(imdb.image_path_at(i))
 
@@ -165,7 +166,7 @@ def test_net(sess, net, imdb, weights_filename, max_per_image=100, thresh=0.):
       cls_boxes = boxes[inds, j*4:(j+1)*4]
       cls_dets = np.hstack((cls_boxes, cls_scores[:, np.newaxis])) \
         .astype(np.float32, copy=False)
-      keep = nms(cls_dets, cfg.TEST.NMS)
+      keep = nms(cls_dets, cfg.TEST.NMS, False)
       cls_dets = cls_dets[keep, :]
       all_boxes[j][i] = cls_dets
 

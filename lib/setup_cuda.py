@@ -94,7 +94,7 @@ cudamat_ext = Extension('nms.gpu_nms',
                         language='c++',
                         libraries=cuda_libs,
                         extra_compile_args=nvcc_compile_args,
-                        include_dirs = [numpy_include, r'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\\include'])
+                        include_dirs = [numpy_include, r'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\\include'])
 						
 
 
@@ -138,6 +138,8 @@ class CUDA_build_ext(build_ext):
         Perform any CUDA specific customizations before actually launching
         compile/link etc. commands.
         """
+        for i in range(0, len(cmd)):
+            cmd[i] = cmd[i].replace("14.16.27023", "14.11.25503")
         if (sys.platform == 'darwin' and len(cmd) >= 2 and cmd[0] == 'nvcc' and
                 cmd[1] == '--shared' and cmd.count('-arch') > 0):
             # Versions of distutils on OSX earlier than 2.7.9 inject
