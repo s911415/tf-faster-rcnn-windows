@@ -14,5 +14,5 @@ TRAIN:
   SNAPSHOT_PREFIX: res101_faster_rcnn
 TEST:
   HAS_RPN: True
-USE_GPU_NMS: True
+USE_GPU_NMS: False
 POOLING_MODE: crop

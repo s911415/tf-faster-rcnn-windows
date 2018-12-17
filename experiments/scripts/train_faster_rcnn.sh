@@ -18,8 +18,16 @@ case ${DATASET} in
   pascal_voc)
     TRAIN_IMDB="voc_2007_trainval"
     TEST_IMDB="voc_2007_test"
-    STEPSIZE="[50000]"
-    ITERS=70000
+    STEPSIZE="[350000]"
+    ITERS=110000
+    ANCHORS="[8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
+  pascal_voc_2017)
+    TRAIN_IMDB="voc_2017_train"
+    TEST_IMDB="voc_2017_test"
+    STEPSIZE="[80000]"
+    ITERS=20000
     ANCHORS="[8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
@@ -27,7 +35,7 @@ case ${DATASET} in
     TRAIN_IMDB="voc_2007_trainval+voc_2012_trainval"
     TEST_IMDB="voc_2007_test"
     STEPSIZE="[80000]"
-    ITERS=110000
+    ITERS=10000
     ANCHORS="[8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
