@@ -43,6 +43,13 @@ class pascal_voc(imdb):
                      'truck',
                      'van'
                     )
+    elif year == '2019':
+        self._classes = ('__background__',  # always index 0
+                     '1',
+                     '5',
+                     '10',
+                     '50'
+                    )
     else:
       self._classes = ('__background__',  # always index 0
                'aeroplane', 'bicycle', 'bird', 'boat',
@@ -318,7 +325,7 @@ class pascal_voc(imdb):
 if __name__ == '__main__':
   from datasets.pascal_voc import pascal_voc
 
-  d = pascal_voc('trainval', '2007')
+  d = pascal_voc('trainval', '2019')
   res = d.roidb
   from IPython import embed;
 
