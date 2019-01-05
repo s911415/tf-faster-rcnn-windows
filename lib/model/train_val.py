@@ -86,6 +86,7 @@ class SolverWrapper(object):
     # Needs to restore the other hyper-parameters/states for training, (TODO xinlei) I have
     # tried my best to find the random states so that it can be recovered exactly
     # However the Tensorflow state is currently not available
+    print('Restoring model state from {:s}'.format(nfile))
     with open(nfile, 'rb') as fid:
       st0 = pickle.load(fid)
       cur = pickle.load(fid)
@@ -95,10 +96,21 @@ class SolverWrapper(object):
       last_snapshot_iter = pickle.load(fid)
 
       np.random.set_state(st0)
-      self.data_layer._cur = cur
-      self.data_layer._perm = perm
-      self.data_layer_val._cur = cur_val
-      self.data_layer_val._perm = perm_val
+      if len(self.data_layer._perm) == len(perm):
+        self.data_layer._cur = cur
+        self.data_layer._perm = perm
+        print("data_layer cur and perm restored.")
+      else:
+        print("train set changed.")
+
+      if len(self.data_layer_val._perm) == len(perm_val):
+        self.data_layer_val._cur = cur_val
+        self.data_layer_val._perm = perm_val
+        print("data_layer_val cur and perm restored.")
+      else:
+        print("validation set changed.")
+
+      print('Restored.')
 
     return last_snapshot_iter
 
