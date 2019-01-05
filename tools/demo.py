@@ -24,21 +24,20 @@ from utils.timer import Timer
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
-import os, cv2
+import os, cv2, glob
 import argparse
 
 from nets.vgg16 import vgg16
 from nets.resnet_v1 import resnetv1
 
-CLASSES = ('__background__',
-           'aeroplane', 'bicycle', 'bird', 'boat',
-           'bottle', 'bus', 'car', 'cat', 'chair',
-           'cow', 'diningtable', 'dog', 'horse',
-           'motorbike', 'person', 'pottedplant',
-           'sheep', 'sofa', 'train', 'tvmonitor')
+CLASSES = ['__background__']
 
-NETS = {'vgg16': ('vgg16_faster_rcnn_iter_70000.ckpt',),'res101': ('res101_faster_rcnn_iter_110000.ckpt',)}
-DATASETS= {'pascal_voc': ('voc_2007_trainval',),'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',)}
+NETS = {'vgg16': ('vgg16_faster_rcnn_iter_{}.ckpt',),'res101': ('res101_faster_rcnn_iter_{}.ckpt',)}
+DATASETS= {
+    'pascal_voc': ('voc_2007_trainval',),
+    'pascal_voc_0712': ('voc_2007_trainval+voc_2012_trainval',),
+    'coins': ('voc_2019_train',)
+}
 
 def vis_detections(im, class_name, dets, thresh=0.5):
     """Draw detected bounding boxes."""
@@ -104,8 +103,15 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Tensorflow Faster R-CNN demo')
     parser.add_argument('--net', dest='demo_net', help='Network to use [vgg16 res101]',
                         choices=NETS.keys(), default='res101')
-    parser.add_argument('--dataset', dest='dataset', help='Trained dataset [pascal_voc pascal_voc_0712]',
-                        choices=DATASETS.keys(), default='pascal_voc_0712')
+    parser.add_argument('--dataset', dest='dataset', help='Trained dataset [pascal_voc pascal_voc_0712 coins]',
+                        choices=DATASETS.keys(), default='coins')
+    parser.add_argument('--iter', dest='iter', help='Iteration',
+                        default='20000')
+    parser.add_argument('--classes', dest='classes', help='Class split with comma [a,b,c]',
+                        default='aeroplane,bicycle,bird,boat,bottle,bus,'+
+                                'car,cat,chair,cow,diningtable,dog,horse,'+
+                                'motorbike,person,pottedplant,sheep,sofa,'+
+                                'train,tvmonitor')
     args = parser.parse_args()
 
     return args
@@ -118,10 +124,14 @@ if __name__ == '__main__':
     # model path
     demonet = args.demo_net
     dataset = args.dataset
+    dataset_classes = map(lambda s: s.strip(), args.classes.split(','))
+    train_iter = args.iter
+    
 	# demonet = 'vgg16'
 	# dataset = vgg16_faster_rcnn_iter_70000.ckpt
     tfmodel = os.path.join('output', demonet, DATASETS[dataset][0], 'default',
-                              NETS[demonet][0])
+                              NETS[demonet][0].format(train_iter))
+    CLASSES.extend(dataset_classes)
 
     print(tfmodel)							  
     if not os.path.isfile(tfmodel + '.meta'):
@@ -142,15 +152,14 @@ if __name__ == '__main__':
         net = resnetv1(num_layers=101)
     else:
         raise NotImplementedError
-    net.create_architecture("TEST", 21,
+    net.create_architecture("TEST", len(CLASSES),
                           tag='default', anchor_scales=[8, 16, 32])
     saver = tf.train.Saver()
     saver.restore(sess, tfmodel)
 
     print('Loaded network {:s}'.format(tfmodel))
 
-    im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
-                '001763.jpg', '004545.jpg']
+    im_names = map(lambda fn: os.path.basename(fn), glob.glob('data/demo/*.jpg'))
     for im_name in im_names:
         print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
         print('Demo for data/demo/{}'.format(im_name))
