@@ -30,6 +30,14 @@ case ${DATASET} in
     ANCHORS="[8,16,32]"
     RATIOS="[0.5,1,2]"
     ;;
+  pascal_voc_2019)
+    TRAIN_IMDB="voc_2019_train"
+    TEST_IMDB="voc_2019_test"
+    STEPSIZE="[80000]"
+    ITERS=20000
+    ANCHORS="[8,16,32]"
+    RATIOS="[0.5,1,2]"
+    ;;
   pascal_voc_0712)
     TRAIN_IMDB="voc_2007_trainval+voc_2012_trainval"
     TEST_IMDB="voc_2007_test"
